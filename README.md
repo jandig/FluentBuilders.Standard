@@ -44,9 +44,7 @@ OrderLine orderLine = new OrderLineBuilder()
 
 ##Getting started
 
-To start using FluentBuilders, fork this repository or use nuget:
-
-    install-package FluentBuilders
+To start using FluentBuilders, fork this repository.
 
 ##Test Data Building Approaches
 

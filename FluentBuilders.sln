@@ -3,7 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBuilders.Core", "FluentBuilders.Core\FluentBuilders.Core.csproj", "{7906E2DA-4831-41B5-A9D3-15966038490B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentBuilders.Core", "FluentBuilders.Core\FluentBuilders.Core.csproj", "{7906E2DA-4831-41B5-A9D3-15966038490B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentBuilders.Tests", "FluentBuilders.Tests\FluentBuilders.Tests.csproj", "{BE4E4966-3F45-4477-B5F7-CCC127AB06B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{546043AA-D4F2-43F4-918D-354F4FB52D0C}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +22,10 @@ Global
 		{7906E2DA-4831-41B5-A9D3-15966038490B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7906E2DA-4831-41B5-A9D3-15966038490B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7906E2DA-4831-41B5-A9D3-15966038490B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE4E4966-3F45-4477-B5F7-CCC127AB06B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE4E4966-3F45-4477-B5F7-CCC127AB06B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE4E4966-3F45-4477-B5F7-CCC127AB06B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE4E4966-3F45-4477-B5F7-CCC127AB06B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

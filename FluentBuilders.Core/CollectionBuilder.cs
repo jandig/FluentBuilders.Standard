@@ -7,8 +7,8 @@ namespace FluentBuilders.Core
         where T : class
         where TBuilder : Builder<T>
     {
-        private readonly Func<TBuilder> _factoryResolver;
-        private readonly List<TBuilder> _builders;
+        private readonly Func<TBuilder> factoryResolver;
+        private readonly List<TBuilder> builders;
 
         /// <summary>
         /// True if the collection builder was explicitly set to be empty, otherwise False.
@@ -17,41 +17,38 @@ namespace FluentBuilders.Core
 
         public CollectionBuilder(IBuilder parentFactory)
         {
-            _factoryResolver = parentFactory.BuildUsing<TBuilder>;
-            _builders = new List<TBuilder>();
+            factoryResolver = parentFactory.BuildUsing<TBuilder>;
+            builders = new List<TBuilder>();
         }
 
         /// <summary>
         /// List of builders that will construct this collection.
         /// </summary>
-        public List<TBuilder> Builders => _builders;
+        public List<TBuilder> Builders => builders;
 
         /// <summary>
         /// Explicitly state that this collection should remain empty.
         /// </summary>
         /// <returns></returns>
-        public void None()
-        {
-            ExplicitlyEmpty = true;
-        }
+        public void None() => ExplicitlyEmpty = true;
 
         /// <summary>
         /// Add one entity that will be created by a builder to this child collection.
         /// </summary>
         /// <returns></returns>
-        public TBuilder AddOne()
-        {
-            return AddMany(1);
-        }
+        public TBuilder AddOne() => AddMany(1);
 
         /// <summary>
         /// Add specified instance to this child collection.
         /// </summary>
         /// <param name="toAdd">Instance to add.</param>
-        public void AddOne(T toAdd)
-        {
-            AddMany(new[] { toAdd });
-        }
+        public void AddOne(T toAdd) => AddMany(new[] { toAdd });
+
+        /// <summary>
+        /// Add one entity that will be created by a builder to this child collection
+        /// </summary>
+        /// <param name="opts">Alterations that should be done to the builder for the entity</param>
+        public void AddOne(Action<TBuilder> opts = null!) => AddMany(1, opts!);
 
         /// <summary>
         /// Add specified instances to this child collection.
@@ -60,7 +57,7 @@ namespace FluentBuilders.Core
         public void AddMany(IEnumerable<T> addItems)
         {
             foreach (var a in addItems)
-                _builders.Add((TBuilder) _factoryResolver().WithInstance(a));
+                builders.Add((TBuilder)factoryResolver().WithInstance(a));
         }
 
         /// <summary>
@@ -69,13 +66,14 @@ namespace FluentBuilders.Core
         /// <param name="count">Number of entities to create</param>
         /// <param name="opts">Alterations that should be done to the builder of each item.</param>
         /// <returns></returns>
-        public TBuilder AddMany(int count, Action<TBuilder> opts = null)
+        public TBuilder AddMany(int count, Action<TBuilder> opts = null!)
         {
-            var fac = _factoryResolver();
+            var fac = factoryResolver();
             for (var i = 0; i < count; i++)
             {
-                opts?.Invoke(fac);
-                _builders.Add(fac);
+                if (opts != null)
+                    opts(fac);
+                builders.Add(fac);
             }
             return fac;
         }
@@ -86,11 +84,11 @@ namespace FluentBuilders.Core
         /// <param name="setupAction">Optional action to apply to each builder.</param>
         /// <param name="customization">Optional action to apply to each created entity.</param>
         /// <returns>All instances created by this collection builder.</returns>
-        public IEnumerable<T> CreateAll(Action<TBuilder> setupAction = null, Action<T> customization = null)
+        public IEnumerable<T> CreateAll(Action<TBuilder> setupAction = null!, Action<T> customization = null!)
         {
-            for (var i = 0; i < _builders.Count; i++)
+            for (var i = 0; i < builders.Count; i++)
             {
-                var builder = _builders[i];
+                var builder = builders[i];
                 setupAction?.Invoke(builder);
                 var result = builder.Create(i);
                 customization?.Invoke(result);
@@ -98,9 +96,6 @@ namespace FluentBuilders.Core
             }
         }
 
-        protected override IEnumerable<T> Build(int seed)
-        {
-            return CreateAll();
-        }
+        protected override IEnumerable<T> Build(int seed) => CreateAll();
     }
 }

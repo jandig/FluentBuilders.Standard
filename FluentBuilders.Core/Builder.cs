@@ -4,13 +4,13 @@ using System.Linq.Expressions;
 
 namespace FluentBuilders.Core
 {
-    public abstract class Builder<TSubject>:IBuilder<TSubject> where TSubject : class
+    public abstract class Builder<TSubject> : IBuilder<TSubject> where TSubject : class
     {
         public List<Action> Setups { get; }
         protected Dictionary<string, IBuilder> PropertyBuilders { get; set; }
-        
+
         protected readonly List<Action<TSubject>> Customizations;
-        public TSubject Instance { get; set; }
+        public TSubject? Instance { get; set; }
         public BuilderFactoryConvention BuilderFactoryConvention { get; set; }
 
         protected Builder()
@@ -28,17 +28,13 @@ namespace FluentBuilders.Core
             return this;
         }
 
-        protected void SetProperty<T>(Expression<Func<TSubject, object>> prop, T instance)
-        {
+        protected void SetProperty<T>(Expression<Func<TSubject, object>> prop, T instance) =>
             SetPropertyBuilder(prop, new ObjectContainer<T>(instance));
-        }
 
-        protected void SetProperty<T>(string key, T instance)
-        {
-            SetPropertyBuilder(key, new ObjectContainer<T>(instance));
-        }
+        protected void SetProperty<T>(string key, T instance) => SetPropertyBuilder(key, new ObjectContainer<T>(instance));
 
-        protected void SetProperty<TNestedBuilder>(Expression<Func<TSubject, object>> prop, Action<TNestedBuilder> opts = null) where TNestedBuilder : IBuilder
+        protected void SetProperty<TNestedBuilder>(Expression<Func<TSubject, object>> prop,
+            Action<TNestedBuilder> opts = null!) where TNestedBuilder : IBuilder
         {
             var builder = BuildUsing<TNestedBuilder>();
             if (opts != null)
@@ -49,7 +45,7 @@ namespace FluentBuilders.Core
             SetPropertyBuilder(prop, builder);
         }
 
-        protected void SetProperty<TNestedBuilder>(string key, Action<TNestedBuilder> opts = null) where TNestedBuilder : IBuilder
+        protected void SetProperty<TNestedBuilder>(string key, Action<TNestedBuilder> opts = null!) where TNestedBuilder : IBuilder
         {
             var builder = BuildUsing<TNestedBuilder>();
             if (opts != null)
@@ -85,10 +81,8 @@ namespace FluentBuilders.Core
             return col ?? new CollectionBuilder<TChild, TChildBuilder>(this);
         }
 
-        private void SetPropertyBuilder<TNestedBuilder>(Expression<Func<TSubject, object>> prop, TNestedBuilder builder) where TNestedBuilder : IBuilder
-        {
-            SetPropertyBuilder(GetPropertyName(prop), builder);
-        }
+        private void SetPropertyBuilder<TNestedBuilder>(Expression<Func<TSubject, object>> prop, TNestedBuilder builder)
+            where TNestedBuilder : IBuilder => SetPropertyBuilder(GetPropertyName(prop), builder);
 
         private void SetPropertyBuilder<TNestedBuilder>(string key, TNestedBuilder builder) where TNestedBuilder : IBuilder
         {
@@ -105,10 +99,7 @@ namespace FluentBuilders.Core
         }
 
         [Obsolete("Replace with HasProperty, HasOptInFor will be removed in version 1.0.")]
-        protected bool HasOptInFor<T>(Expression<Func<TSubject, T>> prop)
-        {
-            return HasProperty(prop);
-        }
+        protected bool HasOptInFor<T>(Expression<Func<TSubject, T>> prop) => HasProperty(prop);
 
         protected bool HasProperty(string key)
         {
@@ -118,10 +109,7 @@ namespace FluentBuilders.Core
         }
 
         [Obsolete("Replace with HasProperty, HasOptInFor will be removed in version 1.0.")]
-        protected bool HasOptInFor(string key)
-        {
-            return HasProperty(key);
-        }
+        protected bool HasOptInFor(string key) => HasProperty(key);
 
         protected TBuilder GetPropertyBuilder<TBuilder>(Expression<Func<TSubject, object>> prop, Func<TBuilder> orUse)
         {
@@ -140,50 +128,29 @@ namespace FluentBuilders.Core
         }
 
         [Obsolete("Replace with GetProperty, OptInFor will be removed in version 1.0.")]
-        protected T OptInFor<T>(string key, Func<T> valueIfNoOptIn)
-        {
-            return GetProperty(key, valueIfNoOptIn);
-        }
+        protected T OptInFor<T>(string key, Func<T> valueIfNoOptIn) => GetProperty(key, valueIfNoOptIn);
 
-        protected T GetProperty<T>(string key, T orUse)
-        {
-            return GetProperty(key, () => orUse);
-        }
+        protected T GetProperty<T>(string key, T orUse) => GetProperty(key, () => orUse);
 
         [Obsolete("Replace with GetProperty, OptInFor will be removed in version 1.0.")]
-        protected T OptInFor<T>(string key, T valueIfNoOptIn)
-        {
-            return GetProperty(key, valueIfNoOptIn);
-        }
+        protected T OptInFor<T>(string key, T valueIfNoOptIn) => GetProperty(key, valueIfNoOptIn);
 
-        protected T GetProperty<T>(Expression<Func<TSubject, T>> prop, Func<T> orUse)
-        {
-            return GetProperty(GetPropertyName(prop), orUse);
-        }
+        protected T GetProperty<T>(Expression<Func<TSubject, T>> prop, Func<T> orUse) => GetProperty(GetPropertyName(prop), orUse);
 
         [Obsolete("Replace with GetProperty, OptInFor will be removed in version 1.0.")]
-        protected T OptInFor<T>(Expression<Func<TSubject, T>> prop, Func<T> valueIfNoOptIn)
-        {
-            return GetProperty(prop, valueIfNoOptIn);
-        }
+        protected T OptInFor<T>(Expression<Func<TSubject, T>> prop, Func<T> valueIfNoOptIn) => GetProperty(prop, valueIfNoOptIn);
 
-        protected T GetProperty<T>(Expression<Func<TSubject, T>> prop, T orUse)
-        {
-            return GetProperty(prop, () => orUse);
-        }
+        protected T GetProperty<T>(Expression<Func<TSubject, T>> prop, T orUse) => GetProperty(prop, () => orUse);
 
         [Obsolete("Replace with GetProperty, OptInFor will be removed in version 1.0.")]
-        protected T OptInFor<T>(Expression<Func<TSubject, T>> prop, T valueIfNoOptIn)
-        {
-            return GetProperty(prop, valueIfNoOptIn);
-        }
+        protected T OptInFor<T>(Expression<Func<TSubject, T>> prop, T valueIfNoOptIn) => GetProperty(prop, valueIfNoOptIn);
 
         public Builder<TSubject> Customize(Action<TSubject> action)
         {
             Customizations.Add(action);
             return this;
         }
-        
+
         public virtual TSubject Create(int seed = 0)
         {
             TSubject subject;
@@ -197,22 +164,16 @@ namespace FluentBuilders.Core
                 }
                 subject = Build(seed);
             }
-                
+
             foreach (var customization in Customizations)
                 customization(subject);
-            
+
             return subject;
         }
 
-        object IBuilder.Create(int seed)
-        {
-            return Create(seed);
-        }
+        object IBuilder.Create(int seed) => Create(seed);
 
-        public static implicit operator TSubject(Builder<TSubject> builder)
-        {
-            return builder.Create();
-        }
+        public static implicit operator TSubject(Builder<TSubject> builder) => builder.Create();
 
         public virtual IEnumerable<TSubject> CreateMany(int i)
         {
@@ -227,11 +188,8 @@ namespace FluentBuilders.Core
 
         protected abstract TSubject Build(int seed);
 
-        public T BuildUsing<T>() where T : IBuilder
-        {
-            return BuilderFactoryConvention.Create<T>();
-        }
-        
+        public T BuildUsing<T>() where T : IBuilder => BuilderFactoryConvention.Create<T>();
+
         private string GetPropertyName<T>(Expression<Func<TSubject, T>> expr)
         {
             switch (expr.Body)
@@ -241,7 +199,9 @@ namespace FluentBuilders.Core
                 case UnaryExpression unary when unary.Operand is MemberExpression unaryMember:
                     return unaryMember.Member.Name;
                 default:
-                    throw new ArgumentException($"The property expression should point out a member of the class {typeof(TSubject).Name}, however the expression does not seem to do so.");
+                    throw new ArgumentException(
+                        $"The property expression should point out a member of the class {typeof(TSubject).Name}" +
+                        $", however the expression does not seem to do so.");
             }
         }
     }
